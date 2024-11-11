@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,37 +13,62 @@ namespace TriangleTypeChecker
 
         private void CheckButton_Click(object sender, RoutedEventArgs e)
         {
-            // Считываем длины сторон из текстовых полей
-            if (int.TryParse(One.Text, out int a) && int.TryParse(Two.Text, out int b) &&
-                int.TryParse(Three.Text, out int c))
-            {
-                string triangleType;
+            string inputA = One.Text;
+            string inputB = Two.Text;
+            string inputC = Three.Text;
 
-                // Проверка положительности сторон
-                if (a <= 0 || b <= 0 || c <= 0)
-                {
-                    triangleType = "Стороны треугольника должны быть положительными.";
-                }
-                else if (a == b && b == c)
-                {
-                    triangleType = "Треугольник равносторонний.";
-                }
-                else if (a == b || b == c || a == c)
-                {
-                    triangleType = "Треугольник равнобедренный.";
-                }
-                else
-                {
-                    triangleType = "Треугольник разносторонний.";
-                }
-
-                // Выводим результат
-                ResultTextBlock.Text = triangleType;
-            }
-            else
+            // Проверка на пустой ввод или некорректный ввод
+            if (!TryParseInput(inputA, out double a) ||
+                !TryParseInput(inputB, out double b) ||
+                !TryParseInput(inputC, out double c))
             {
-                ResultTextBlock.Text = "Пожалуйста, введите корректные целые числа.";
+                ResultTextBlock.Text = "Ошибка ввода";
+                return;
             }
+
+            // Проверка условий существования треугольника
+            string result = CheckTriangleExistence(a, b, c);
+            ResultTextBlock.Text = result;
+        }
+
+        private bool TryParseInput(string input, out double value)
+        {
+            // Если пустое значение или символы, возвращаем false
+            return double.TryParse(input, out value);
+        }
+
+        private string CheckTriangleExistence(double a, double b, double c)
+        {
+            // Проверим, все ли стороны положительные
+            if (a <= 0 && b <= 0 && c <= 0)
+            {
+                return "Треугольник не существует";
+            }
+            if (a <= 0 || b <= 0 || c <= 0)
+            {
+                return "Треугольник не существует";
+            }
+
+            // Проверка условия существования треугольника
+            if (a + b <= c || a + c <= b || b + c <= a)
+            {
+                return " Треугольник не существует";
+            }
+
+            // Проверка на равносторонний треугольник
+            if (a == b && b == c)
+            {
+                return "Равносторонний треугольник";
+            }
+
+            // Проверка на равнобедренный треугольник
+            if (a == b || b == c || a == c)
+            {
+                return "Равнобедренный треугольник";
+            }
+
+            // Если все стороны разные
+            return "Разносторонний треугольник";
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -55,7 +79,6 @@ namespace TriangleTypeChecker
                 textBox.Text = string.Empty;
             }
         }
-
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -76,6 +99,5 @@ namespace TriangleTypeChecker
                 }
             }
         }
-
     }
 }
